@@ -1,0 +1,24 @@
+{
+  "name": "rtshome/pgbabylon",
+  "description": "PDO class extension with helpers for special PostgreSQL types",
+  "minimum-stability": "stable",
+  "license": "BSD",
+  "keywords": ["postgresql", "pgsql", "pdo", "database", "postgres", "copy", "json", "hstore"],
+  "authors": [
+    {
+      "name": "Denis Gasparin",
+      "email": "denis@gasparin.net"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.8.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "PgBabylon\\": "src/"
+    }
+  }
+}
