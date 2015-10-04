@@ -18,7 +18,7 @@ $arr = [
 
 $s = $pdo->prepare("INSERT INTO my_table(json) VALUES (:json)");
 $s->execute([
-    ":json" => new \PgBabylon\DataTypes\JSON($arr)
+    ":json" => \PgBabylon\DataTypes\JSON($arr)
 ]);
 ```
 
@@ -49,7 +49,8 @@ CREATE TABLE person(
 );
 ```
 
-```
+```php
+<?php
 use PgBabylon\PDO;
 use PgBabylon\DataTypes;
 use PgBabylon\Operators;
