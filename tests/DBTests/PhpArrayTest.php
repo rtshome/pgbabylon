@@ -1,17 +1,18 @@
 <?php
 use PgBabylon\PDO;
+use PgBabylon\DataTypes;
 
 class PhpArrayDbTest extends PHPUnit_Framework_TestCase
 {
 
     public function testDataType()
     {
-        if(skipTest('9.0')) {
+        if (skipTest('9.0')) {
             $this->markTestSkipped();
             return;
         }
 
-        if(getDB()->exec("CREATE TABLE array_test(txt_arr TEXT[] NOT NULL, int_arr TEXT[], idx INTEGER)") === false)
+        if (getDB()->exec("CREATE TABLE array_test(txt_arr TEXT[] NOT NULL, int_arr INT[], idx INTEGER)") === false)
             $this->markTestSkipped("Create table for array testing failed");
 
         // Test Inserts
@@ -19,7 +20,7 @@ class PhpArrayDbTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\\PgBabylon\\PDOStatement', $s, "Asserting pdo::prepare returns a pgbabylon statement");
 
         $testTxtArr = ["val_1", "val_2"];
-        $testIntArr = [1,2,3];
+        $testIntArr = [1, 2, 3];
 
         $s->bindParam(":txt_arr", $testTxtArr, PDO::PARAM_ARRAY);
         $s->bindParam(":int_arr", $testIntArr, PDO::PARAM_ARRAY);

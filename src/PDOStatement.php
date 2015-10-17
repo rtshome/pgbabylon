@@ -525,6 +525,9 @@ class PDOStatement extends \PDOStatement implements \IteratorAggregate
 
             case '_text':
                 return PDO::PARAM_ARRAY;
+
+            case '_int4':
+                return PDO::PARAM_ARRAY;
         }
 
         return null;
