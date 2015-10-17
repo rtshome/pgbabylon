@@ -82,4 +82,38 @@ class PhpArrayDbTest extends PHPUnit_Framework_TestCase
         $this->assertSame($testTxtArr, $r['txt_arr']);
     }
 
+    public function testMultiArray()
+    {
+        if (skipTest('9.0')) {
+            $this->markTestSkipped();
+            return;
+        }
+
+        if (getDB()->exec("CREATE TABLE multi_array_test(txt_arr TEXT[][] NOT NULL, int_arr INT[][], idx INTEGER)") === false)
+            $this->markTestSkipped("Create table for array testing failed");
+
+        // Test Inserts
+        $s = getDB()->prepare("INSERT INTO multi_array_test VALUES(:txt_arr, :int_arr)");
+        $this->assertInstanceOf('\\PgBabylon\\PDOStatement', $s, "Asserting pdo::prepare returns a pgbabylon statement");
+
+        $testTxtArr = [["val_1_1", "val_1_2"], ["val_2_1", "val_2_2"]];
+        $testIntArr = [[1, 2, 3], [4, 5, 6]];
+
+        $s->bindParam(":txt_arr", $testTxtArr, PDO::PARAM_ARRAY);
+        $s->bindParam(":int_arr", $testIntArr, PDO::PARAM_ARRAY);
+
+        $r = $s->execute();
+        $this->assertTrue($r, "Testing multidimensional array insert using PHP text and int array");
+
+        // Test Select
+        $s = getDB()->prepare("SELECT * FROM multi_array_test");
+        $s->bindColumn("txt_arr", $txt_val, PDO::PARAM_ARRAY);
+        $s->bindColumn("int_arr", $int_val, PDO::PARAM_ARRAY);
+        $r = $s->execute();
+        $this->assertTrue($r, "Testing Array select");
+        $r = $s->fetch(PDO::FETCH_ASSOC);
+        $this->assertSame($testTxtArr, $r['txt_arr']);
+        $this->assertSame($testIntArr, $r['int_arr']);
+
+    }
 }

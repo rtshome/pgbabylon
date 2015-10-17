@@ -11,18 +11,7 @@ class PhpArray extends DataType
         if (is_null($this->_parameterValue))
             return null;
 
-        $escapedValues = [];
-        foreach($this->_parameterValue as $e)
-        {
-            $escapedValues[] = sprintf('"%s"', str_replace(
-                                                  ["\\", "\""],
-                                                  ["\\\\", "\\\""],
-                                                  $e
-                                               )
-            );
-        }
-
-        return sprintf('{%s}', implode(', ', $escapedValues));
+        return $this->_encodeAsPgSqlArrayString($this->_parameterValue);
     }
 
     public function setUsingPgsqlValue($val)
@@ -33,9 +22,7 @@ class PhpArray extends DataType
         if(!preg_match("/^\{(.*)\}$/", $val, $regs))
             throw new InvalidValue("Value {$val} received from PostgreSQL is not a valid pgsql array");
 
-        $r = null;
-        @eval("\$r = [{$regs[1]}];");
-        $this->_parameterValue = $r;
+        $this->_parameterValue = $this->_pgsqlArrayParse($val);;
     }
 
     public function setUsingPhpValue(&$var)
@@ -65,5 +52,25 @@ class PhpArray extends DataType
     public static function type()
     {
         return PDO::PARAM_ARRAY;
+    }
+
+    private function _encodeAsPgSqlArrayString($val)
+    {
+        $escapedValues = [];
+        foreach($val as $e)
+        {
+            if(is_array($e))
+                $escapedValues[] = $this->_encodeAsPgSqlArrayString($e);
+            else
+                $escapedValues[] = sprintf('"%s"', str_replace(
+                        ["\\", "\""],
+                        ["\\\\", "\\\""],
+                        $e
+                    )
+                );
+        }
+
+        return sprintf('{%s}', implode(', ', $escapedValues));
+
     }
 }
