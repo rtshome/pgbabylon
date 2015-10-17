@@ -17,6 +17,12 @@ class IN extends Operator
         if(!is_null($val) && !is_array($val))
             throw new InvalidValue("Invalid value for IN operator. Must provide an array as argument");
 
+        if(is_null($val))
+        {
+            $this->_values = null;
+            return;
+        }
+
         foreach($val as $p)
         {
             if(is_object($p) && !$p instanceof DataType)
@@ -48,6 +54,9 @@ class IN extends Operator
 
     public function getParameters()
     {
+        if(is_null($this->_values))
+            return [];
+
         $parameters = [];
         $idx = 0;
         foreach($this->_values as $pVal)

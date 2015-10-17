@@ -64,6 +64,10 @@ class INTest extends PHPUnit_Framework_TestCase
             $idx++;
         }
 
+        // Test using in with NULL values
+        $s = getDB()->prepare("SELECT * FROM in_test WHERE int_field IN :int");
+        $s->execute([':int' => Operators\IN(null)]);
+        $this->assertSame(0, $s->rowCount());
 
     }
 }
