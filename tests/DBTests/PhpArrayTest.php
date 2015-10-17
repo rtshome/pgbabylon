@@ -116,4 +116,27 @@ class PhpArrayDbTest extends PHPUnit_Framework_TestCase
         $this->assertSame($testIntArr, $r['int_arr']);
 
     }
+
+    public function testIssue7()
+    {
+        if (skipTest('9.0')) {
+            $this->markTestSkipped();
+            return;
+        }
+
+        if (getDB()->exec("CREATE TABLE issue7(txt_arr TEXT[] NOT NULL, idx INTEGER)") === false)
+            $this->markTestSkipped("Create table for array testing issue7");
+
+        // Issue #7
+        $stmt = getDb()->prepare('INSERT INTO issue7 (txt_arr) VALUES (:myarray)');
+        $stmt->execute([':myarray' => DataTypes\PhpArray(['die(foo)'])]);
+
+        // Test Select
+        $s = getDB()->prepare("SELECT * FROM issue7");
+        $s->bindColumn("txt_arr", $txt_val, PDO::PARAM_ARRAY);
+        $r = $s->execute();
+        $r = $s->fetch(PDO::FETCH_ASSOC);
+        $this->assertSame(['die(foo)'], $r['txt_arr']);
+
+    }
 }
