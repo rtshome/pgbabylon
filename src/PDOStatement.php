@@ -303,8 +303,12 @@ class PDOStatement extends \PDOStatement implements \IteratorAggregate
         }
         else
         {
+            $isPositional = !Helpers\ArrayHelper::isAssociative($input_parameters);
             foreach($input_parameters as $pName => $pVal)
             {
+                if($isPositional) $pName = $pName + 1; // See Issue #5: if input_parameters isn't an associative array
+                                                       //               pName contains the array index
+
                 if($pVal instanceof DataTypes\DataType)
                     $this->_statement->bindValue($pName, $pVal->getPgsqlValue());
                 else
