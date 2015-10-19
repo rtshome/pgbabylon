@@ -116,4 +116,41 @@ class PDO extends \PDO
 
         return $s;
     }
+
+    /**
+     * Copies data from file specified by filename into table table_name using delimiter as fields delimiter and fields list
+     *
+     * @param $table_name
+     * @param $filename
+     * @param string $delimiter If null, tab is used
+     * @param string $null_as If null, a field with \N is interpreted as NULL
+     * @param array $fields Array with table field names to import from the file. If null, all fields of the table are selected
+     * @return bool
+     */
+    public function copyFromFile($table_name, $filename ,$delimiter = null, $null_as = null, $fields = null)
+    {
+        if(!is_null($fields) && is_array($fields))
+            $fields = implode(",", $fields);
+
+        return $this->pgsqlCopyFromFile($table_name, $filename, $delimiter, $null_as, $fields);
+    }
+
+    /**
+     * Copies data from table into file specified by filename using delimiter as fields delimiter and fields list
+     *
+     * @param string $table_name It can be a table or a query (in this case it must enclosed between () parentheses)
+     * @param string $filename
+     * @param string $delimiter If null, tab is used
+     * @param string $null_as If null, a field with \N is interpreted as NULL
+     * @param array $fields Array with table field names to export to the file. If null, all fields of the table are selected
+     * @return bool
+     */
+    public function copyToFile($table_name, $filename, $delimiter = null, $null_as = null, $fields = null)
+    {
+        if(!is_null($fields) && is_array($fields))
+            $fields = implode(",", $fields);
+
+        return $this->pgsqlCopyToFile($table_name, $filename, $delimiter, $null_as, $fields);
+    }
+
 }
